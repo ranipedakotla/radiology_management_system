@@ -1,0 +1,487 @@
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Ambulance Invoice</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      color: #222;
+      background: #fff;
+      padding: 20px 24px 16px 24px;
+      word-spacing: normal;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+      margin-bottom: 6px;
+    }
+    .header-left {
+      display: table-cell;
+      vertical-align: top;
+      width: 55%;
+    }
+    .header-right {
+      display: table-cell;
+      vertical-align: top;
+      width: 45%;
+      text-align: right;
+    }
+
+    .logo-row { display: table; }
+    .logo-img-cell {
+      display: table-cell;
+      vertical-align: middle;
+      padding-right: 10px;
+    }
+    .logo-img-cell img {
+      width: 52px;
+      height: 52px;
+      display: block;
+    }
+    .logo-text-cell { display: table-cell; vertical-align: middle; }
+    .logo-name {
+      font-size: 18px;
+      font-weight: 900;
+      color: #1b4d8e;
+      letter-spacing: normal;
+      word-spacing: normal;
+      line-height: 1.15;
+    }
+    .logo-tagline { font-size: 9px; color: #555; margin-top: 2px; }
+    .header-address { font-size: 10px; color: #333; margin-top: 10px; line-height: 1.65; }
+
+    .invoice-label {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1b4d8e;
+      letter-spacing: normal;
+      word-spacing: normal;
+      margin-bottom: 7px;
+      white-space: nowrap;
+    }
+    .invoice-meta { font-size: 11px; color: #333; line-height: 1.75; }
+    .invoice-meta strong { font-weight: 700; color: #111; }
+
+    /* ── DIVIDER ── */
+    .divider { border: none; border-top: 2.5px solid #1b4d8e; margin: 12px 0 14px 0; }
+
+    /* ── UNIFIED INFO BOX: one border wrapping Patient+Booking+Trip ── */
+    .info-box {
+      border: 1px solid #d8e4f0;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+    .info-box-top {
+      display: table;
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .card {
+      display: table-cell;
+      width: 50%;
+      padding: 11px 14px 13px 14px;
+      vertical-align: top;
+    }
+    .card-left  { border-right: 1px solid #d8e4f0; }
+    .info-box-divider { border: none; border-top: 1px solid #d8e4f0; margin: 0; }
+    .trip-card  { padding: 11px 14px 13px 14px; }
+
+    .card-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #1b4d8e;
+      margin-bottom: 10px;
+      display: table;
+
+    }
+    .card-title svg { display: table-cell; vertical-align: middle; margin-right: 5px; }
+    .card-title span { display: table-cell; vertical-align: middle; }
+
+    .info-table { width: 100%; border-collapse: collapse; }
+    .info-table td { padding: 2.5px 0; font-size: 11px; vertical-align: top }
+    .info-table .lbl { color: #888; width: 100px; }
+    .info-table .val { color: #111; font-weight: 600; }
+    .trip-table { width: 100%; border-collapse: collapse; margin-top: 11px; }
+    .trip-table td { vertical-align: middle; padding: 0 6px 0 0; white-space: nowrap; }
+    .trip-table td:last-child { padding-right: 0; }
+
+    .trip-inner { display: table; }
+    .trip-ic-cell { display: table-cell; vertical-align: middle; padding-right: 6px; }
+    .trip-txt-cell { display: table-cell; vertical-align: middle; }
+    .trip-lbl { font-size: 8px; color: #888; text-transform: uppercase; letter-spacing: normal margin-bottom: 2px; white-space: nowrap; }
+    .trip-val { font-size: 11px; font-weight: 700; color: #111; white-space: nowrap }
+
+    .ic {
+      width: 26px; height: 26px; border-radius: 50%; display: block; text-align: center; line-height: 26px;
+    }
+    .ic svg { display: inline-block; vertical-align: middle; margin-top: -1px; }
+    .ic-blue   { background: #e8f0fb; }
+    .ic-green  { background: #e6f5ec; }
+    .ic-gray   { background: #f0f0f0; }
+    .ic-orange { background: #fff3e0; }
+    .ic-teal   { background: #e0f4f4; }
+    .ic-purple { background: #f0eafb; }
+
+    /* ── CHARGES TABLE ── */
+    .charges-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+    .charges-table thead tr { background: #1b4d8e; }
+    .charges-table thead th {
+      padding: 8px 10px; font-size: 11px; font-weight: 700; color: #fff; text-align: left
+    }
+    .charges-table thead th.c { text-align: center; }
+    .charges-table thead th.r { text-align: right; }
+    .charges-table tbody tr:nth-child(even) { background: #f3f7fd; }
+    .charges-table tbody tr:nth-child(odd)  { background: #fff; }
+    .charges-table tbody td {
+      padding: 7px 10px; font-size: 11px; border-bottom: 1px solid #e4ecf6; color: #222
+    }
+    .charges-table tbody td.c { text-align: center; }
+    .charges-table tbody td.r { text-align: right; font-weight: 600; }
+
+    /* ── BOTTOM ROW ── */
+    .bottom-row { display: table; width: 100%; border-top: 1px solid #d8e4f0; padding-top: 12px; }
+    .pay-cell { display: table-cell; width: 53%; vertical-align: top; }
+    .tot-cell { display: table-cell; width: 47%; vertical-align: top; padding-left: 8px; }
+
+    .pay-inner { display: table; }
+    .qr-cell   { display: table-cell; vertical-align: top; padding-right: 12px; }
+    .qr-cell img { width: 64px; height: 64px; display: block; }
+    .scan-lbl  { font-size: 7px; color: #aaa; text-transform: uppercase; letter-spacing: normal; text-align: center; margin-top: 3px; }
+    .pay-det   { display: table-cell; vertical-align: middle; }
+
+    .pay-head  { font-weight: 700; color: #1b4d8e; font-size: 11px; margin-bottom: 6px }
+    .pay-row   { font-size: 11px; color: #444; margin-bottom: 3px }
+    .pay-row .pl { color: #888; }
+    .pay-row .pv { font-weight: 700; color: #111; }
+    .badge-paid {
+      display: inline-block; background: #d4edda; color: #1a7a3c;
+      font-size: 9px; font-weight: 700; padding: 1px 8px;
+      border-radius: 20px; letter-spacing: normal; vertical-align: middle
+    }
+
+    .tot-table { width: 100%; border-collapse: collapse; }
+    .tot-table td { padding: 4px 8px; font-size: 11px; color: #333 }
+    .tot-table td.tv { text-align: right; }
+    .tot-table tr.disc td { color: #c0392b; }
+    .grand-row { background: #1b4d8e; }
+    .grand-row td { color: #fff !important; font-size: 13px !important; font-weight: 700 !important; padding: 8px 10px !important }
+
+    /* ── FOOTER ── */
+    .footer { margin-top: 16px; border-top: 1px solid #d8e4f0; padding-top: 9px; }
+    .fnote  { font-size: 9px; color: #888; margin-bottom: 2px; }
+    .fbot   { display: table; width: 100%; margin-top: 8px; }
+    .fcopy  { display: table-cell; font-size: 9px; color: #bbb; vertical-align: bottom; }
+    .fsig   { display: table-cell; text-align: right; font-size: 11px; font-weight: 700; color: #1b4d8e; vertical-align: bottom; }
+
+    @page { size: A4; margin: 10mm 12mm; }
+    @media print { body { padding: 0; } }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════ HEADER ══════════════ -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-row">
+        <div class="logo-img-cell">
+          {% if logo_url %}
+          <img src="{{ logo_url | safe }}" alt="Logo" style="width:52px;height:52px;display:block;"/>
+          {% endif %}
+        </div>
+        <div class="logo-text-cell">
+          <div class="logo-name">CARE HOSPITAL</div>
+          <div class="logo-tagline">A Complete $ Secure e MS Platform</div>
+        </div>
+      </div>
+      <div class="header-address">
+        Madhapur, Hyderabad
+
+        9876543210 | Emergency: 108
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="invoice-label">AMBULANCE INVOICE</div>
+      <div class="invoice-meta">
+        Invoice ID: <strong>{{invoice_id}}</strong>
+
+        Trip ID: <strong>{{trip_id}}</strong>
+
+        Date: <strong>{{invoice_date}}</strong>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- ══════════════ PATIENT + BOOKING + TRIP (one unified box) ══════════════ -->
+  <div class="info-box">
+
+    <!-- Top row: Patient | Booking -->
+    <div class="info-box-top">
+      <div class="card card-left">
+        <div class="card-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="7" r="4" stroke="#1b4d8e" stroke-width="2"/>
+            <path d="M4 20c0-3.866 3.582-7 8-7s8 3.134 8 7" stroke="#1b4d8e" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Patient Details</span>
+        </div>
+        <table class="info-table">
+          <tr><td class="lbl">Name</td><td class="val">{{patient_name}}</td></tr>
+          <tr><td class="lbl">Age/Gender</td><td class="val">{{patient_age}} / {{patient_gender}}</td></tr>
+          <tr><td class="lbl">Contact</td><td class="val">{{patient_contact}}</td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="4" width="18" height="17" rx="2" stroke="#1b4d8e" stroke-width="2"/>
+            <path d="M3 9h18" stroke="#1b4d8e" stroke-width="2"/>
+            <path d="M8 2v4M16 2v4" stroke="#1b4d8e" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Booking Details</span>
+        </div>
+        <table class="info-table">
+          <tr><td class="lbl">Booking Person</td><td class="val">{{booking_person}}</td></tr>
+          <tr><td class="lbl">Pickup:</td><td class="val">{{pickup_address}}</td></tr>
+          <tr><td class="lbl">Drop:</td><td class="val">{{drop_address}}</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <hr class="info-box-divider"/>
+
+    <!-- Trip Information -->
+    <div class="trip-card">
+    <div class="card-title">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="6" cy="18" r="3" stroke="#1b4d8e" stroke-width="2"/>
+        <circle cx="18" cy="6"  r="3" stroke="#1b4d8e" stroke-width="2"/>
+        <path d="M6 15V9a6 6 0 016-6h1" stroke="#1b4d8e" stroke-width="2" stroke-linecap="round"/>
+        <path d="M18 9v6a6 6 0 01-6 6H11" stroke="#1b4d8e" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span>Trip Information</span>
+    </div>
+
+    <!-- Row 1: Ambulance Type | Vehicle No | Driver -->
+    <table class="trip-table">
+      <tr>
+        <!-- Ambulance Type -->
+        <td style="width:33%;">
+          <div class="trip-inner">
+            <div class="trip-ic-cell">
+              <div class="ic ic-blue">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="2" y="9" width="15" height="9" rx="1.5" stroke="#1b4d8e" stroke-width="1.8"/>
+                  <path d="M17 12h2.5l1.5 3v2H17v-5z" stroke="#1b4d8e" stroke-width="1.8" stroke-linejoin="round"/>
+                  <circle cx="6.5" cy="19" r="2" stroke="#1b4d8e" stroke-width="1.6"/>
+                  <circle cx="15"  cy="19" r="2" stroke="#1b4d8e" stroke-width="1.6"/>
+                  <rect x="6" y="11" width="3" height="3" rx="0.3" fill="#1b4d8e"/>
+                </svg>
+              </div>
+            </div>
+            <div class="trip-txt-cell">
+              <div class="trip-lbl">Ambulance Type</div>
+              <div class="trip-val">{{ambulance_type}}</div>
+            </div>
+          </div>
+        </td>
+        <!-- Vehicle No -->
+        <td style="width:33%;">
+          <div class="trip-inner">
+            <div class="trip-ic-cell">
+              <div class="ic ic-green">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="6" width="18" height="12" rx="2" stroke="#27ae60" stroke-width="1.8"/>
+                  <circle cx="7.5"  cy="18" r="2" stroke="#27ae60" stroke-width="1.6"/>
+                  <circle cx="16.5" cy="18" r="2" stroke="#27ae60" stroke-width="1.6"/>
+                  <path d="M3 10h18" stroke="#27ae60" stroke-width="1.6"/>
+                </svg>
+              </div>
+            </div>
+            <div class="trip-txt-cell">
+              <div class="trip-lbl">Vehicle No</div>
+              <div class="trip-val">{{vehicle_number}}</div>
+            </div>
+          </div>
+        </td>
+        <!-- Driver -->
+        <td style="width:34%;">
+          <div class="trip-inner">
+            <div class="trip-ic-cell">
+              <div class="ic ic-gray">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="7" r="4" stroke="#555" stroke-width="1.8"/>
+                  <path d="M4 20c0-3.866 3.582-7 8-7s8 3.134 8 7" stroke="#555" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+            </div>
+            <div class="trip-txt-cell">
+              <div class="trip-lbl">Driver</div>
+              <div class="trip-val">{{driver_name}}</div>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <!-- spacer row -->
+      <tr><td colspan="3" style="padding-top:10px;"></td></tr>
+
+      <!-- Row 2: Start Time | End Time | Distance -->
+      <tr>
+        <!-- Start Time -->
+        <td style="width:33%;">
+          <div class="trip-inner">
+            <div class="trip-ic-cell">
+              <div class="ic ic-orange">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="9" stroke="#e67e22" stroke-width="1.8"/>
+                  <path d="M12 7v5l3 3" stroke="#e67e22" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+            </div>
+            <div class="trip-txt-cell">
+              <div class="trip-lbl">Start Time</div>
+              <div class="trip-val">{{start_time}}</div>
+            </div>
+          </div>
+        </td>
+        <!-- End Time -->
+        <td style="width:33%;">
+          <div class="trip-inner">
+            <div class="trip-ic-cell">
+              <div class="ic ic-teal">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="9" stroke="#16a085" stroke-width="1.8"/>
+                  <path d="M12 7v5l3 3" stroke="#16a085" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+            </div>
+            <div class="trip-txt-cell">
+              <div class="trip-lbl">End Time</div>
+              <div class="trip-val">{{end_time}}</div>
+            </div>
+          </div>
+        </td>
+        <!-- Distance -->
+        <td style="width:34%;">
+          <div class="trip-inner">
+            <div class="trip-ic-cell">
+              <div class="ic ic-purple">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 12h18M15 6l6 6-6 6" stroke="#7c3aed" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+            <div class="trip-txt-cell">
+              <div class="trip-lbl">Distance</div>
+              <div class="trip-val">{{distance}}</div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div><!-- /trip-card -->
+  </div><!-- /info-box -->
+
+  <!-- ══════════════ CHARGES TABLE ══════════════ -->
+  <table class="charges-table">
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th class="c">Quantity</th>
+        <th class="c">Unit Price</th>
+        <th class="r">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Base Fare</td>
+        <td class="c">{{base_fare_qty}}</td>
+        <td class="c">&#8377;{{base_fare_unit}}</td>
+        <td class="r">&#8377;{{base_fare_total}}</td>
+      </tr>
+      <tr>
+        <td>Distance Charge</td>
+        <td class="c">{{distance_qty}}</td>
+        <td class="c">&#8377;{{distance_unit}}</td>
+        <td class="r">&#8377;{{distance_total}}</td>
+      </tr>
+      <tr>
+        <td>Waiting Charges</td>
+        <td class="c">{{waiting_qty}}</td>
+        <td class="c">&#8377;{{waiting_unit}}</td>
+        <td class="r">&#8377;{{waiting_total}}</td>
+      </tr>
+      <tr>
+        <td>Oxygen Charges</td>
+        <td class="c">{{oxygen_qty}}</td>
+        <td class="c">&#8377;{{oxygen_unit}}</td>
+        <td class="r">&#8377;{{oxygen_total}}</td>
+      </tr>
+      <tr>
+        <td>Emergency Handling</td>
+        <td class="c">{{emergency_qty}}</td>
+        <td class="c">&#8377;{{emergency_unit}}</td>
+        <td class="r">&#8377;{{emergency_total}}</td>
+      </tr>
+      <tr>
+        <td>Night Charges</td>
+        <td class="c">{{night_qty}}</td>
+        <td class="c">&#8377;{{night_unit}}</td>
+        <td class="r">&#8377;{{night_total}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ══════════════ PAYMENT + TOTALS ══════════════ -->
+  <div class="bottom-row">
+    <div class="pay-cell">
+      <div class="pay-inner">
+        <div class="qr-cell">
+          {% if qr_code_url %}
+          <img src="{{ qr_code_url | safe }}" alt="QR Code" style="width:64px;height:64px;display:block;"/>
+          <div class="scan-lbl">SCAN TO VERIFY</div>
+          {% endif %}
+        </div>
+        <div class="pay-det">
+          <div class="pay-head">Payment Info</div>
+          <div class="pay-row"><span class="pl">Status &nbsp;&nbsp;</span> <span class="badge-paid">{{payment_status}}</span></div>
+          <div class="pay-row"><span class="pl">Method &nbsp;</span> <span class="pv">{{payment_method}}</span></div>
+          <div class="pay-row"><span class="pl">Txn ID &nbsp;&nbsp;</span> <span class="pv">{{transaction_id}}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tot-cell">
+      <table class="tot-table">
+        <tr><td>Subtotal</td><td class="tv">&#8377;{{subtotal}}</td></tr>
+        <tr><td>Tax ({{tax_percent}}%)</td><td class="tv">&#8377;{{tax_amount}}</td></tr>
+        <tr class="disc"><td>Discount</td><td class="tv">&#8377;{{discount_amount}}</td></tr>
+        <tr class="grand-row"><td>Grand Total</td><td class="tv">&#8377;{{grand_total}}</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════ FOOTER ══════════════ -->
+  <div class="footer">
+    <p class="fnote">Note: This is a system-generated ambulance invoice.</p>
+    <p class="fnote">Emergency Support: <strong>{{emergency_number}}</strong></p>
+    <div class="fbot">
+      <div class="fcopy">&copy; {{year}} {{hospital_name}}. All rights reserved.</div>
+      <div class="fsig">Authorized Signature</div>
+    </div>
+  </div>
+
+</body>
+</html>

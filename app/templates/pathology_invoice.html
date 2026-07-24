@@ -1,0 +1,280 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Invoice {{ invoice.number }}</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #111; }
+     header.letterhead {
+      position: relative;
+      color: #fff;
+      padding: 26px 22px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+    header.letterhead > svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+    header.letterhead > *:not(svg) {
+      position: relative;
+      z-index: 1;
+    }
+
+    .lh-left {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  letter-spacing: .5px;
+}
+
+.logo.image-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 12px;
+}
+    .labname {
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: .3px;
+    }
+    .labslogan {
+      opacity: .95;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+    .lh-right {
+      display: grid;
+      gap: 6px;
+      font-size: 12px;
+      text-align: right;
+    }
+    .lh-right a {
+      color: #fff;
+      text-decoration: none;
+    }
+    .lab .sub{font-size:11px; color:#555;}
+
+   .meta-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 10px;
+}
+    /* Terms & Conditions */
+    .terms {
+      padding: 12px 22px;
+      font-size: 10px;
+      color: #64748b;
+      border-top: 1px solid var(--line);
+    }
+
+.meta-container .invoice-details {
+  flex: 1;
+  font-size: 20px;
+        display: flex;
+      flex-direction: column;
+
+}
+
+.meta-container .invoice-details:first-child {
+  margin-right: 10px;
+}
+.meta-container .invoice-details div {
+  font-size: 14px;
+  margin-bottom: 4px;
+  white-space: nowrap;   /* prevents line breaks */
+}
+
+.meta-container .qr-code {
+  flex: 0 0 auto;
+  text-align: right;
+  font-size: 10px;
+  color: #666;
+}
+    table{border-collapse:collapse; width:100%; margin-top:8px;}
+    th,td{border:1px solid #ddd; padding:6px;}
+    th{background:#f2f2f2; text-align:left;}
+    .right{text-align:right;}
+    .total-row td{font-weight:bold;}
+    .qr{text-align:right; font-size:10px; color:#666;}
+    .section-title{margin-top:14px; font-weight:bold;}
+    .signs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 12px;
+    }
+    .signbox {
+      padding-top: 106px;
+      border-top: 1px dashed var(--line);
+    }
+    .signbox .name {
+      font-weight: 700;
+    }
+    .signbox small {
+      color: #64748b;
+    }
+    .signbox img {
+      width: 100px;
+      height: 50px;
+      margin-top: 8px;
+      margin-right: 15px;
+      object-fit: contain;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+    }
+
+  </style>
+</head>
+<body>
+
+
+     <header class="letterhead">
+      <svg viewBox="0 0 800 120" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="hdr" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#0b66d5"/>
+            <stop offset="1" stop-color="#1977f3"/>
+          </linearGradient>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#hdr)"/>
+      </svg>
+
+      <div class="lh-left">
+        <div class="logo image-cover"><img src="C:\Users\Hello\Desktop\pathology\lab-backend\app\templates\logo.png" alt="Logo" /></div>
+        <div>
+          <div class="labname">{{ lab.name }}</div>
+
+        </div>
+      </div>
+      <div class="lh-right">
+        <div>☎︎ <a href="tel:{{ lab.phone }}">{{ lab.phone }}</a></div>
+        <div>✉︎ <a href="mailto:{{ lab.email }}">{{ lab.email }}</a></div>
+       <div class="labslogan">{{ lab.address }}</div>
+      </div>
+    </header>
+
+
+
+<!--    <div class="meta-container">-->
+<!--  <div class="invoice-details">-->
+<!--    <strong>Invoice:</strong> {{ invoice.number }} &nbsp;  &nbsp;-->
+<!--    <strong>Date:</strong> {{ invoice.created_at }} &nbsp;  &nbsp;-->
+<!--    <strong>Order:</strong> {{ order.order_no }}-->
+<!--  </div>-->
+<!--  <div class="invoice-details">-->
+<!--    <strong>Patient:</strong> {{ patient.name }} ({{ patient.sex }}) &nbsp;  &nbsp;-->
+<!--    <strong>DOB:</strong> {{ patient.dob }} &nbsp;  &nbsp;-->
+<!--    <strong>Patient Code:</strong> {{ patient.code }}-->
+<!--  </div>-->
+<!--  <div class="qr-code">-->
+<!--    <img src="{{ qr_data_uri }}" alt="QR" width="100"/>-->
+<!--  </div>-->
+<!--</div>-->
+
+     <div class="meta-container">
+  <div class="invoice-details">
+    <div><strong>Invoice:</strong> {{ invoice.number }}</div><br>
+    <div><strong>Date:</strong> {{ invoice.created_at }}</div><br>
+    <div><strong>Order:</strong> {{ order.order_no }}</div>
+  </div>
+
+  <div class="invoice-details">
+    <div><strong>Patient:</strong> {{ patient.name }} ({{ patient.sex }})</div><br>
+    <div><strong>DOB:</strong> {{ patient.dob }}</div><br>
+    <div><strong>Patient Code:</strong> {{ patient.code }}</div>
+  </div>
+
+  <div class="qr-code">
+    <img src="{{ qr_data_uri }}" alt="QR" width="100"/>
+  </div>
+</div>
+
+
+
+  <div class="section-title">Charges</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th class="right">Qty</th>
+        <th class="right">Unit Price ({{ invoice.currency }})</th>
+        <th class="right">Line Total ({{ invoice.currency }})</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for l in lines %}
+      <tr>
+        <td>{{ l.desc }}</td>
+        <td class="right">{{ l.qty }}</td>
+        <td class="right">{{ l.unit_price }}</td>
+        <td class="right">{{ l.line_total }}</td>
+      </tr>
+      {% endfor %}
+      <tr class="total-row"><td colspan="3" class="right">Subtotal</td><td class="right">{{ invoice.subtotal }}</td></tr>
+      <tr><td colspan="3" class="right">Discount ({{ invoice.discount_pct }}%)</td><td class="right">-{{ invoice.discount_value }}</td></tr>
+      <tr><td colspan="3" class="right">Tax ({{ invoice.tax_pct }}%)</td><td class="right">{{ invoice.tax_value }}</td></tr>
+      <tr class="total-row"><td colspan="3" class="right">Total</td><td class="right">{{ invoice.total }}</td></tr>
+      <tr class="total-row"><td colspan="3" class="right">Paid</td><td class="right">{{ invoice.paid }}</td></tr>
+      <tr class="total-row"><td colspan="3" class="right">Due</td><td class="right">{{ invoice.due }}</td></tr>
+    </tbody>
+  </table>
+
+  {% if payments and payments|length > 0 %}
+    <div class="section-title">Payments</div>
+    <table>
+      <thead>
+        <tr><th>Amount</th><th>Method</th><th>Reference</th><th>Date</th></tr>
+      </thead>
+      <tbody>
+        {% for p in payments %}
+          <tr><td>{{ p.amount }}</td><td>{{ p.method }}</td><td>{{ p.ref }}</td><td>{{ p.date }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+        <div class="signs">
+<!--        <div class="signbox">-->
+<!--          <div style="height:46px"></div>-->
+<!--          <div class="name">Mr. Sachin Sharma</div>-->
+<!--          <small>DMLT, Lab Incharge</small>-->
+        </div>
+        <div class="signbox" style="text-align:right">
+          <div class="name">(Authorised Signatory)</div>
+        </div>
+
+      </div>
+
+    <div class="terms">
+      <h5>TERMS & CONDITIONS</h5>
+      <ul style="margin: 0; padding-left: 20px;">
+        <li>This report is intended for clinical use by the referring physician only.</li>
+        <li>Values may vary with instrument and methodology; please correlate clinically.</li>
+        <li>Specimen quality and pre-analytical variables can affect results.</li>
+        <li>Reprint or reproduction requires prior written permission from the laboratory.</li>
+        <li>In case of queries, contact the lab within 7 days of report issuance.</li>
+      </ul>
+      <div style="font-size: 10px; color: #64748b; margin-top: 6px;">NOT VALID FOR MEDICO LEGAL PURPOSE</div>
+      <div style="font-size: 10px; color: #64748b;">Work timing: Monday - Saturday, 8 am to 5 pm</div>
+    </div>
+</body>
+</html>

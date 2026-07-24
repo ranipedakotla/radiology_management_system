@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>{{ lab.name }} – Lab Report</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+  <style>
+    :root {
+      --brand: #0b66d5;
+      --brand2: #1977f3;
+      --ink: #0f172a;
+      --muted: #475569;
+      --line: #e2e8f0;
+      --bg: #f8fafc;
+      --thead: #f7fbff;
+      --row: #fafcff;
+      --chipH: #dc2626;
+      --chipL: #d97706;
+      --chipN: #16a34a;
+    }
+
+    html, body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 12px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Arial;
+    }
+
+    .report {
+      max-width: 800px;
+      margin: 24px auto;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(2, 6, 23, .06);
+      overflow: hidden;
+    }
+
+    /* ===== Letterhead (blue only) ===== */
+    header.letterhead {
+      position: relative;
+      color: #fff;
+      padding: 26px 22px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+    header.letterhead > svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+    header.letterhead > *:not(svg) {
+      position: relative;
+      z-index: 1;
+    }
+
+    .lh-left {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+    .logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #ffffff55;
+      background: #ffffff22;
+      font-weight: 800;
+      letter-spacing: .5px;
+    }
+    .labname {
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: .3px;
+    }
+    .labslogan {
+      opacity: .95;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+    .lh-right {
+      display: grid;
+      gap: 6px;
+      font-size: 12px;
+      text-align: right;
+    }
+    .lh-right a {
+      color: #fff;
+      text-decoration: none;
+    }
+
+    /* ===== Meta band (white) ===== */
+    .topband1 {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--line);
+    }
+    .topband {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+    .ids {
+      font-size: 13px;
+      flex: 1;
+    }
+    .ids-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 6px 0;
+    }
+    .ids-row .label {
+      flex: 1;
+    }
+    .ids-row b {
+      flex: 1;
+      text-align: left;
+    }
+    .title {
+      font-weight: 800;
+      margin: 20px 0 10px;
+      font-size: 15px;
+    }
+    .label {
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .nowrap {
+      white-space: nowrap;
+    }
+
+    .qr-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .qr-card {
+      width: 120px;
+      height: 120px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: #fff;
+      margin: 0 auto;
+    }
+    .qr-card img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+    .verify {
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 6px;
+      word-break: break-all;
+    }
+
+    /* ===== Content ===== */
+    .section {
+      padding: 16px 22px;
+    }
+    .section-title {
+      font-weight: 900;
+      letter-spacing: .3px;
+      text-align: center;
+      margin: 10px 2px;
+    }
+    .sub-title {
+      text-transform: uppercase;
+      color: #111;
+      letter-spacing: .5px;
+      text-align: center;
+      font-size: 12.5px;
+      margin-bottom: 16px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    thead th {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+      text-align: left;
+      color: #334155;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: var(--thead);
+      padding: 10px 12px;
+    }
+    tbody td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    tbody tr:nth-child(odd) {
+      background: var(--row);
+    }
+    td.value {
+      font-weight: 400;
+    }
+    td.value.abn {
+      font-weight: 700;
+    }
+    .flag-H {
+      color: var(--chipH);
+      font-weight: 700;
+    }
+    .flag-L {
+      color: var(--chipL);
+      font-weight: 700;
+    }
+    .flag-N {
+      color: var(--chipN);
+      font-weight: 700;
+    }
+
+    .notes {
+      background: #e0efffc2;
+      border: 1px solid var(--line);
+      border-left: 4px solid #1c5fbe;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: #334155;
+      font-size: 12.5px;
+      margin: 18px 0;
+      page-break-inside: avoid;
+    }
+    .notes h5 {
+      margin: 0 0 6px 0;
+      font-size: 12px;
+      letter-spacing: .3px;
+      text-transform: uppercase;
+      color: #0b3a92;
+    }
+
+    .signs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 12px;
+    }
+    .signbox {
+      padding-top: 16px;
+      border-top: 1px dashed var(--line);
+    }
+    .signbox .name {
+      font-weight: 700;
+    }
+    .signbox small {
+      color: #64748b;
+    }
+
+    .footer {
+      padding: 12px 22px 20px;
+      text-align: center;
+      color: #475569;
+      font-size: 12px;
+      border-top: 1px solid var(--line);
+    }
+    .badge {
+      margin-top: 6px;
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    /* Terms & Conditions */
+    .terms {
+      padding: 12px 22px;
+      font-size: 10px;
+      color: #64748b;
+      border-top: 1px solid var(--line);
+    }
+
+    /* Print adjustments */
+    @media print {
+      header.letterhead {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .report {
+        box-shadow: none;
+        border: none;
+        margin: 0;
+        border-radius: 0;
+      }
+      thead th {
+        background: #f0f6ff;
+      }
+    }
+  </style>
+</head>
+<body>
+  <article class="report">
+
+    <!-- BLUE LETTERHEAD -->
+    <header class="letterhead">
+      <svg viewBox="0 0 800 120" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="hdr" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#0b66d5"/>
+            <stop offset="1" stop-color="#1977f3"/>
+          </linearGradient>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#hdr)"/>
+      </svg>
+
+      <div class="lh-left">
+        <div class="logo">LAB</div>
+        <div>
+          <div class="labname">{{ lab.name }}</div>
+          <div class="labslogan">{{ lab.address }}</div>
+        </div>
+      </div>
+      <div class="lh-right">
+        <div>☎︎ <a href="tel:{{ lab.phone }}">{{ lab.phone }}</a></div>
+        <div>✉︎ <a href="mailto:{{ lab.email }}">{{ lab.email }}</a></div>
+        <div>🌐 <a href="{{ lab.web }}">{{ lab.web }}</a></div>
+      </div>
+    </header>
+
+    <!-- WHITE META BAND -->
+    <div class="topband1">
+      <div class="topband">
+        <!-- Patient (left) -->
+        <div class="ids">
+          <div class="title">{{ patient.name }}</div>
+          <div class="ids-row">
+            <span class="label">Gender</span>
+            <b class="nowrap">{{ patient.sex }}</b>
+          </div>
+          <div class="ids-row">
+            <span class="label">Referred by</span>
+            <b class="nowrap">{{ doctor.name }}</b>
+          </div>
+          <div class="ids-row">
+            <span class="label">Patient No.</span>
+            <b class="nowrap">{{ patient.code }}</b>
+          </div>
+          <div class="ids-row">
+            <span class="label">Collected at</span>
+            <b class="nowrap">{{ lab.address }}</b>
+          </div>
+        </div>
+
+        <!-- Sample (right) -->
+        <div class="ids">
+          <div class="title">Sample</div>
+          <div class="ids-row">
+            <span class="label">Sample Collected</span>
+            <b class="nowrap">{{ sections[0].collected_at }}</b>
+          </div>
+          <div class="ids-row">
+            <span class="label">Report Date</span>
+            <b class="nowrap">{{ order.created_at }}</b>
+          </div>
+          <div class="ids-row">
+            <span class="label">Report ID</span>
+            <b class="nowrap">{{ order.order_no }}</b>
+          </div>
+          <div class="ids-row">
+            <span class="label">Status</span>
+            <b>
+              <span class="chip N">{{ order.status }}</span>
+            </b>
+          </div>
+        </div>
+      </div>
+      <!-- QR (right) -->
+      <div class="qr-wrap">
+        <div class="qr-card">
+          <img src="{{ qr_data_uri }}" alt="QR"/>
+        </div>
+<!--        <div class="verify">Verify: {{ verify_url }}</div>-->
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <section class="section">
+      <div class="section-title">HAEMATOLOGY</div>
+      <div class="sub-title">SPECIMEN: {{ sections[0].specimen }} &nbsp; • &nbsp; COLLECTED: {{ sections[0].collected_at }}</div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:35%">Test</th>
+            <th style="width:15%">Result</th>
+            <th style="width:15%">Unit</th>
+            <th style="width:35%">Reference</th>
+            <th style="width:0%; display:none;">Interpretation</th>
+            <th style="width:0%; display:none;">Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for section in sections %}
+            {% for row in section.rows %}
+              <tr>
+                <td>{{ row.name }}</td>
+                <td class="value {% if row.flag == 'H' %}flag-H{% elif row.flag == 'L' %}flag-L{% elif row.flag == 'N' %}flag-N{% endif %}">{{ row.value }}</td>
+                <td>{{ row.unit }}</td>
+                <td>{{ row.ref }}</td>
+                <td style="display:none;"></td>
+                <td style="display:none;"></td>
+              </tr>
+            {% endfor %}
+            {% if section.test_interp or section.test_note %}
+              <tr>
+                <td colspan="6">
+                  {% if section.test_interp %}
+                    <div class="notes" style="margin-top: 18px;">
+                      <h5>Interpretation</h5>
+                      <div>{{ section.test_interp }}</div>
+                    </div>
+                  {% endif %}
+                  {% if section.test_note %}
+                    <div class="notes" style="margin-top: 18px;">
+                      <h5>Note</h5>
+                      <div>{{ section.test_note }}</div>
+                    </div>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <!-- <div class="notes">
+        <h5>Notes</h5>
+        <div>A complete blood count (CBC) is used to evaluate overall health and detect a wide range of disorders, including anemia, infection, and leukemia.</div>
+      </div>
+
+      <div class="notes" style="margin-top: 18px;">
+        <h5>Interpretation</h5>
+        <div>Findings within reference ranges. Correlate with clinical context and prior results.</div>
+      </div> -->
+
+      <div class="signs">
+        <div class="signbox">
+          <div style="height:46px"></div>
+          <div class="name">Mr. Sachin Sharma</div>
+          <small>DMLT, Lab Incharge</small>
+        </div>
+        <div class="signbox" style="text-align:right">
+          <div style="height:46px"></div>
+          <div class="name">Dr. A.K. Athana</div>
+          <small>MBBS, MD Pathologist</small>
+        </div>
+      </div>
+    </section>
+
+    <!-- TERMS & CONDITIONS -->
+    <div class="terms">
+      <h5>TERMS & CONDITIONS</h5>
+      <ul style="margin: 0; padding-left: 20px;">
+        <li>This report is intended for clinical use by the referring physician only.</li>
+        <li>Values may vary with instrument and methodology; please correlate clinically.</li>
+        <li>Specimen quality and pre-analytical variables can affect results.</li>
+        <li>Reprint or reproduction requires prior written permission from the laboratory.</li>
+        <li>In case of queries, contact the lab within 7 days of report issuance.</li>
+      </ul>
+      <div style="font-size: 10px; color: #64748b; margin-top: 6px;">NOT VALID FOR MEDICO LEGAL PURPOSE</div>
+      <div style="font-size: 10px; color: #64748b;">Work timing: Monday - Saturday, 8 am to 5 pm</div>
+    </div>
+    <footer class="footer">
+      <div class="badge">** END OF REPORT **</div>
+      <div class="badge">Generated by {{ lab.name }} on {{ order.created_at }}</div>
+    </footer>
+
+  </article>
+</body>
+</html>

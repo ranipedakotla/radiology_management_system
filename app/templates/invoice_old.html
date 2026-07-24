@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Invoice {{ invoice.number }}</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #111; }
+    .header { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #333; padding-bottom:8px; margin-bottom:12px;}
+    .lab h1{margin:0; font-size:18px;}
+    .lab .sub{font-size:11px; color:#555;}
+    .meta{font-size:11px;}
+    table{border-collapse:collapse; width:100%; margin-top:8px;}
+    th,td{border:1px solid #ddd; padding:6px;}
+    th{background:#f2f2f2; text-align:left;}
+    .right{text-align:right;}
+    .total-row td{font-weight:bold;}
+    .qr{text-align:right; font-size:10px; color:#666;}
+    .section-title{margin-top:14px; font-weight:bold;}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="lab">
+      <h1>{{ lab.name }}</h1>
+      <div class="sub">{{ lab.address }} • {{ lab.phone }} • {{ lab.email }}</div>
+    </div>
+    <div class="qr">
+      <img src="{{ qr_data_uri }}" alt="QR" width="100"/><br/>
+      Verify: {{ verify_url }}
+    </div>
+  </div>
+
+  <div class="meta">
+    <strong>Invoice:</strong> {{ invoice.number }} &nbsp; | &nbsp;
+    <strong>Date:</strong> {{ invoice.created_at }} &nbsp; | &nbsp;
+    <strong>Order:</strong> {{ order.order_no }}
+  </div>
+
+  <div class="meta">
+    <strong>Patient:</strong> {{ patient.name }} ({{ patient.sex }}) &nbsp; | &nbsp;
+    <strong>DOB:</strong> {{ patient.dob }} &nbsp; | &nbsp;
+    <strong>Patient Code:</strong> {{ patient.code }}
+  </div>
+
+  <div class="section-title">Charges</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th class="right">Qty</th>
+        <th class="right">Unit Price ({{ invoice.currency }})</th>
+        <th class="right">Line Total ({{ invoice.currency }})</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for l in lines %}
+      <tr>
+        <td>{{ l.desc }}</td>
+        <td class="right">{{ l.qty }}</td>
+        <td class="right">{{ l.unit_price }}</td>
+        <td class="right">{{ l.line_total }}</td>
+      </tr>
+      {% endfor %}
+      <tr class="total-row"><td colspan="3" class="right">Subtotal</td><td class="right">{{ invoice.subtotal }}</td></tr>
+      <tr><td colspan="3" class="right">Discount ({{ invoice.discount_pct }}%)</td><td class="right">-{{ invoice.discount_value }}</td></tr>
+      <tr><td colspan="3" class="right">Tax ({{ invoice.tax_pct }}%)</td><td class="right">{{ invoice.tax_value }}</td></tr>
+      <tr class="total-row"><td colspan="3" class="right">Total</td><td class="right">{{ invoice.total }}</td></tr>
+      <tr class="total-row"><td colspan="3" class="right">Paid</td><td class="right">{{ invoice.paid }}</td></tr>
+      <tr class="total-row"><td colspan="3" class="right">Due</td><td class="right">{{ invoice.due }}</td></tr>
+    </tbody>
+  </table>
+
+  {% if payments and payments|length > 0 %}
+    <div class="section-title">Payments</div>
+    <table>
+      <thead>
+        <tr><th>Amount</th><th>Method</th><th>Reference</th><th>Date</th></tr>
+      </thead>
+      <tbody>
+        {% for p in payments %}
+          <tr><td>{{ p.amount }}</td><td>{{ p.method }}</td><td>{{ p.ref }}</td><td>{{ p.date }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</body>
+</html>

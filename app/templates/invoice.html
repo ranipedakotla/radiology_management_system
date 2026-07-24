@@ -1,0 +1,237 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Invoice {{ invoice.number }}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #111; }
+
+    /* ── HEADER ── */
+    .header-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #1470e8;
+      color: #fff;
+    }
+    .header-table td {
+      padding: 22px 28px;        /* more breathing room */
+      border: none;
+      vertical-align: middle;
+    }
+    .header-table td.hd-right {
+      text-align: right;
+      white-space: nowrap;
+      width: 1%;
+      line-height: 1.7;
+    }
+    .header-table a { color: #fff; text-decoration: none; }
+
+    .logo-row { border-collapse: collapse; }
+    .logo-row td { border: none; padding: 0; vertical-align: middle; }
+    .logo-row td.logo-cell { padding-right: 14px; }  /* space between logo and name */
+    .logo-img {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+      display: block;
+    }
+    .labname {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: .3px;
+      white-space: nowrap;
+    }
+
+    /* ── META ── */
+    .meta-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 18px;
+      margin-bottom: 4px;
+    }
+    .meta-table td {
+      border: none;
+      padding: 0 10px 0 0;
+      vertical-align: top;    /* all cells top-aligned */
+    }
+    .meta-table td.qr-cell {
+      padding: 0;
+      text-align: right;
+      vertical-align: top;
+    }
+    .meta-table td:first-child { padding-left: 0; }
+    .meta-table td:last-child  { padding-right: 0; text-align: right; }
+    .meta-table .row { margin-bottom: 14px; font-size: 13px; }
+    .meta-table img { display: block; margin-left: auto; }
+
+    /* ── CHARGES TABLE ── */
+    .section-title { margin-top: 16px; font-weight: bold; font-size: 12px; margin-bottom: 4px; }
+    table.data { border-collapse: collapse; width: 100%; }
+    table.data th,
+    table.data td  { border: 1px solid #ddd; padding: 7px 8px; font-size: 12px; }
+    table.data th  { background: #f2f2f2; text-align: left; }
+    .right { text-align: right; }
+    .bold  { font-weight: bold; }
+
+    /* ── SIGNATURE ── */
+    .sign-wrap { margin-top: 24px; text-align: right; }
+    .signbox {
+      display: inline-block;
+      min-width: 200px;
+      padding-top: 54px;
+<!--      border-top: 1px dashed #bbb;-->
+      text-align: right;
+    }
+    .signbox .name { font-weight: 700; font-size: 12px; }
+
+    /* ── TERMS ── */
+    .terms {
+      margin-top: 18px;
+      padding-top: 10px;
+      border-top: 1px solid #ddd;
+      font-size: 10px;
+      color: #64748b;
+    }
+    .terms h5 { font-size: 10px; margin-bottom: 4px; color: #444; }
+    .terms ul  { margin: 0; padding-left: 18px; }
+    .terms li  { margin-bottom: 2px; }
+    .terms .note { margin-top: 5px; }
+  </style>
+</head>
+<body>
+
+  <!-- ══ HEADER ══ -->
+  <table class="header-table" cellspacing="0" cellpadding="0">
+    <tr>
+      <td>
+        <table class="logo-row" cellspacing="0" cellpadding="0">
+          <tr>
+            <td class="logo-cell">
+              <img class="logo-img" src="{{ hospital_logo }}" alt="Logo" />
+            </td>
+            <td>
+              <div class="labname">CARE HOSPITAL</div>
+            </td>
+          </tr>
+        </table>
+      </td>
+      <td class="hd-right">
+        <div>☎︎ <a href="tel:9876543210">9876543210</a></div>
+        <div>Madhapur, Hyderabad</div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- ══ META ══ -->
+  <table class="meta-table" cellspacing="0" cellpadding="0">
+    <tr>
+      <td style="width:34%; vertical-align:top; padding:0 10px 0 0;">
+        <div style="font-size:13px; margin-bottom:0;"><strong>Invoice:</strong> {{ invoice.invoice_number }}</div>
+        <div style="font-size:13px; margin-top:40px;"><strong>Date:</strong> {{ invoice.created_at }}</div>
+      </td>
+      <td style="width:40%; vertical-align:top; padding:0 10px 0 0;">
+        <div style="font-size:13px; margin-bottom:0;"><strong>Patient:</strong> {{ patient.name }} ({{ patient.gender }})</div>
+        <div style="font-size:13px; margin-top:40px;"><strong>DOB:</strong> {{ patient.dob }}</div>
+      </td>
+      <td style="vertical-align:top; text-align:right; padding:0; width:96px;">
+        <img src="{{ qr_data_uri }}" alt="QR" width="90" style="display:block; margin:0 0 0 auto;" />
+      </td>
+    </tr>
+  </table>
+
+  <!-- ══ CHARGES ══ -->
+  <div class="section-title">Charges</div>
+  <table class="data" cellspacing="0">
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th class="right">Qty</th>
+        <th class="right">Unit Price ({{ invoice.currency }})</th>
+        <th class="right">Line Total ({{ invoice.currency }})</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for l in lines %}
+      <tr>
+        <td>{{ l.desc }}</td>
+        <td class="right">{{ l.qty }}</td>
+        <td class="right">{{ l.unit_price }}</td>
+        <td class="right">{{ l.line_total }}</td>
+      </tr>
+      {% endfor %}
+      <tr>
+        <td colspan="3" class="right bold">Subtotal</td>
+        <td class="right bold">{{ invoice.subtotal }}</td>
+      </tr>
+      <tr>
+        <td colspan="3" class="right">Discount ({{ invoice.discount_pct }}%)</td>
+        <td class="right">-{{ invoice.discount_value }}</td>
+      </tr>
+      <tr>
+        <td colspan="3" class="right">Tax ({{ invoice.tax_pct }}%)</td>
+        <td class="right">{{ invoice.tax_value }}</td>
+      </tr>
+      <tr>
+        <td colspan="3" class="right bold">Total</td>
+        <td class="right bold">{{ invoice.total }}</td>
+      </tr>
+      <tr>
+        <td colspan="3" class="right bold">Paid</td>
+        <td class="right bold">{{ invoice.paid }}</td>
+      </tr>
+      <tr>
+        <td colspan="3" class="right bold">Due</td>
+        <td class="right bold">{{ invoice.due }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ══ PAYMENTS ══ -->
+  {% if payments and payments|length > 0 %}
+    <div class="section-title">Payments</div>
+    <table class="data" cellspacing="0">
+      <thead>
+        <tr>
+          <th>Amount</th>
+          <th>Method</th>
+          <th>Reference</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in payments %}
+        <tr>
+          <td>{{ p.amount }}</td>
+          <td>{{ p.method }}</td>
+          <td>{{ p.ref }}</td>
+          <td>{{ p.date }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+  <!-- ══ SIGNATURE ══ -->
+  <div class="sign-wrap">
+    <div class="signbox">
+      <div class="name">(Authorised Signatory)</div>
+    </div>
+  </div>
+
+  <!-- ══ TERMS ══ -->
+  <div class="terms">
+    <h5>TERMS &amp; CONDITIONS</h5>
+    <ul>
+      <li>This report is intended for clinical use by the referring physician only.</li>
+      <li>Values may vary with instrument and methodology; please correlate clinically.</li>
+      <li>Specimen quality and pre-analytical variables can affect results.</li>
+      <li>Reprint or reproduction requires prior written permission from the laboratory.</li>
+      <li>In case of queries, contact the lab within 7 days of report issuance.</li>
+    </ul>
+    <div class="note">NOT VALID FOR MEDICO LEGAL PURPOSE</div>
+    <div>Work timing: Monday - Saturday, 8 am to 5 pm</div>
+  </div>
+
+</body>
+</html>
