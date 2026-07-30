@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, Integer, String, Text
+from sqlalchemy import DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -15,21 +15,26 @@ class RadiologyRegistration(Base):
         autoincrement=True
     )
 
-    # Existing hospital patient ID
-    # Used for OPD/IPD patient
-    patient_id: Mapped[int | None] = mapped_column(
-        Integer,
+    # Radiology Registration ID
+    registration_id: Mapped[str | None] = mapped_column(
+        String(30),
+        unique=True,
         nullable=True
     )
 
-    # External patient ID
-    # Used when patient is not already registered in HMS
+    # Existing HMS Patient
+    patient_id: Mapped[int | None] = mapped_column(
+        ForeignKey("patients.id"),
+        nullable=True
+    )
+
+    # Manual Radiology Patient
     external_id: Mapped[int | None] = mapped_column(
         Integer,
         nullable=True
     )
 
-    # Radiology test details
+    # Test Details
     test_name: Mapped[str] = mapped_column(
         String(150),
         nullable=False
@@ -40,23 +45,26 @@ class RadiologyRegistration(Base):
         nullable=True
     )
 
-    # Doctor details
+    # Referring Doctor
     doctor_name: Mapped[str | None] = mapped_column(
         String(120),
         nullable=True
     )
 
-    # Registration status
+    # Registration Status
     status: Mapped[str] = mapped_column(
         String(30),
-        default="Registered",
+        default="Booked",
         nullable=False
     )
 
-    remarks: Mapped[str | None] = mapped_column(
-        Text,
-        nullable=True
+    # Scan Status
+    scan_status: Mapped[str] = mapped_column(
+        String(30),
+        default="Pending",
+        nullable=False
     )
+
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime,

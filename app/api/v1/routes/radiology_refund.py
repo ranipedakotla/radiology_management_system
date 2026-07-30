@@ -8,59 +8,130 @@ from app.schemas.radiology_refund import (
 )
 
 from app.services.radiology_refund import (
-    RadiologyRefundService,
+    RefundService,
 )
 
 
 router = APIRouter(
-    prefix="/radiology-refunds",
+    prefix="/radiology_refunds",
     tags=["Radiology Refund"]
 )
 
 
+
 # ========================================
-# CREATE REFUND
+# CREATE REFUND REQUEST
+# Role: Receptionist
 # ========================================
 @router.post(
     "/",
     response_model=RefundResponse,
     status_code=201
 )
-def create_radiology_refund(
+def create_refund_request(
 
-    registration_id: int = Form(
-        ...
-    ),
+    registration_id: int = Form(...),
 
-    refund_amount: float = Form(
-        ...
-    ),
+    cancellation_reason: str = Form(...),
 
-    refund_reason: str = Form(
-        ...
-    ),
-
-    remarks: str | None = Form(
-        default=None
-    ),
+    refund_amount: float = Form(...),
 
     db: Session = Depends(get_db)
+
 ):
 
-    service = RadiologyRefundService(
-        db
-    )
+    service = RefundService(db)
 
-    return service.create_refund(
+
+    return service.create_refund_request(
 
         registration_id=registration_id,
 
-        refund_amount=refund_amount,
+        cancellation_reason=cancellation_reason,
 
-        refund_reason=refund_reason,
-
-        remarks=remarks,
+        refund_amount=refund_amount
     )
+
+
+
+# ========================================
+# APPROVE REFUND
+# Role: Admin / Account Manager
+# ========================================
+@router.put(
+    "/{refund_id}/approve",
+    response_model=RefundResponse
+)
+def approve_refund(
+
+    refund_id: int,
+
+    db: Session = Depends(get_db)
+
+):
+
+    service = RefundService(db)
+
+
+    return service.approve_refund(
+        refund_id
+    )
+
+
+
+# ========================================
+# REJECT REFUND
+# Role: Admin / Account Manager
+# ========================================
+@router.put(
+    "/{refund_id}/reject",
+    response_model=RefundResponse
+)
+def reject_refund(
+
+    refund_id: int,
+
+    db: Session = Depends(get_db)
+
+):
+
+    service = RefundService(db)
+
+
+    return service.reject_refund(
+        refund_id
+    )
+
+
+
+# ========================================
+# PROCESS REFUND
+# Role: Billing Executive
+# ========================================
+@router.put(
+    "/{refund_id}/process",
+    response_model=RefundResponse
+)
+def process_refund(
+
+    refund_id: int,
+
+    refund_mode: str = Form(...),
+
+    db: Session = Depends(get_db)
+
+):
+
+    service = RefundService(db)
+
+
+    return service.process_refund(
+
+        refund_id=refund_id,
+
+        refund_mode=refund_mode
+    )
+
 
 
 # ========================================
@@ -72,16 +143,17 @@ def create_radiology_refund(
         RefundResponse
     ]
 )
-def get_all_radiology_refunds(
+def get_all_refunds(
 
     db: Session = Depends(get_db)
+
 ):
 
-    service = RadiologyRefundService(
-        db
-    )
+    service = RefundService(db)
+
 
     return service.get_all_refunds()
+
 
 
 # ========================================
@@ -91,68 +163,21 @@ def get_all_radiology_refunds(
     "/{refund_id}",
     response_model=RefundResponse
 )
-def get_radiology_refund(
+def get_refund(
 
     refund_id: int,
 
     db: Session = Depends(get_db)
+
 ):
 
-    service = RadiologyRefundService(
-        db
-    )
+    service = RefundService(db)
+
 
     return service.get_refund(
         refund_id
     )
 
-
-# ========================================
-# UPDATE REFUND
-# ========================================
-@router.put(
-    "/{refund_id}",
-    response_model=RefundResponse
-)
-def update_radiology_refund(
-
-    refund_id: int,
-
-    refund_amount: float | None = Form(
-        default=None
-    ),
-
-    refund_reason: str | None = Form(
-        default=None
-    ),
-
-    status_value: str | None = Form(
-        default=None
-    ),
-
-    remarks: str | None = Form(
-        default=None
-    ),
-
-    db: Session = Depends(get_db)
-):
-
-    service = RadiologyRefundService(
-        db
-    )
-
-    return service.update_refund(
-
-        refund_id=refund_id,
-
-        refund_amount=refund_amount,
-
-        refund_reason=refund_reason,
-
-        status_value=status_value,
-
-        remarks=remarks,
-    )
 
 
 # ========================================
@@ -161,16 +186,16 @@ def update_radiology_refund(
 @router.delete(
     "/{refund_id}"
 )
-def delete_radiology_refund(
+def delete_refund(
 
     refund_id: int,
 
     db: Session = Depends(get_db)
+
 ):
 
-    service = RadiologyRefundService(
-        db
-    )
+    service = RefundService(db)
+
 
     return service.delete_refund(
         refund_id

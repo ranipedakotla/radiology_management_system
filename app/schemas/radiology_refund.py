@@ -4,50 +4,21 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 
-# --------------------------------
-# Create Refund
-# --------------------------------
-class RefundCreate(BaseModel):
-
-    registration_id: int
-
-    refund_amount: float
-
-    refund_reason: str
-
-    remarks: Optional[str] = None
-
-
-# --------------------------------
-# Update Refund
-# --------------------------------
-class RefundUpdate(BaseModel):
-
-    refund_amount: Optional[float] = None
-
-    refund_reason: Optional[str] = None
-
-    status: Optional[str] = None
-
-    remarks: Optional[str] = None
-
-
-# --------------------------------
-# Response Schema
-# --------------------------------
 class RefundResponse(BaseModel):
 
     id: int
 
     registration_id: int
 
+    cancellation_reason: str
+
     refund_amount: float
 
-    refund_reason: str
+    approval_status: str
 
-    status: str
+    refund_mode: Optional[str] = None
 
-    remarks: Optional[str] = None
+    refund_status: str
 
     created_at: datetime
 

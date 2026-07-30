@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import APIRouter, Depends, Form
 from sqlalchemy.orm import Session
 
@@ -6,49 +8,44 @@ from app.core.security import get_db
 from app.schemas.radiology_scan import (
     RadiologyScanResponse,
 )
+
 from app.services.radiology_scan import (
     RadiologyScanService,
 )
 
-
 router = APIRouter(
-    prefix="/radiology-scans",
+    prefix="/radiology-scan",
     tags=["Radiology Scan"]
 )
 
 
 # ========================================
-# CREATE SCAN
+# START SCAN
 # ========================================
 @router.post(
-    "/",
+    "/start",
     response_model=RadiologyScanResponse,
     status_code=201
 )
-def create_radiology_scan(
+def start_scan(
 
-    appointment_id: int = Form(...),
+    registration_id: int = Form(...),
 
     technician_name: str | None = Form(
-        default=None
-    ),
-
-    remarks: str | None = Form(
-        default=None
-    ),
+            default=None
+        ),
 
     db: Session = Depends(get_db)
+
 ):
 
     service = RadiologyScanService(db)
 
-    return service.create_scan(
+    return service.start_scan(
 
-        appointment_id=appointment_id,
+        registration_id=registration_id,
 
         technician_name=technician_name,
-
-        remarks=remarks,
     )
 
 
@@ -57,13 +54,12 @@ def create_radiology_scan(
 # ========================================
 @router.get(
     "/",
-    response_model=list[
-        RadiologyScanResponse
-    ]
+    response_model=list[RadiologyScanResponse]
 )
-def get_all_radiology_scans(
+def get_all_scans(
 
     db: Session = Depends(get_db)
+
 ):
 
     service = RadiologyScanService(db)
@@ -78,39 +74,17 @@ def get_all_radiology_scans(
     "/{scan_id}",
     response_model=RadiologyScanResponse
 )
-def get_radiology_scan(
+def get_scan(
 
     scan_id: int,
 
     db: Session = Depends(get_db)
+
 ):
 
     service = RadiologyScanService(db)
 
-    return service.get_scan(
-        scan_id
-    )
-
-
-# ========================================
-# START SCAN
-# ========================================
-@router.put(
-    "/{scan_id}/start",
-    response_model=RadiologyScanResponse
-)
-def start_radiology_scan(
-
-    scan_id: int,
-
-    db: Session = Depends(get_db)
-):
-
-    service = RadiologyScanService(db)
-
-    return service.start_scan(
-        scan_id
-    )
+    return service.get_scan(scan_id)
 
 
 # ========================================
@@ -120,69 +94,117 @@ def start_radiology_scan(
     "/{scan_id}/complete",
     response_model=RadiologyScanResponse
 )
-def complete_radiology_scan(
+def complete_scan(
 
     scan_id: int,
 
     db: Session = Depends(get_db)
+
 ):
 
     service = RadiologyScanService(db)
 
-    return service.complete_scan(
-        scan_id
-    )
+    return service.complete_scan(scan_id)
 
 
 # ========================================
-# UPDATE SCAN
+# HOLD SCAN
 # ========================================
 @router.put(
-    "/{scan_id}",
+    "/{scan_id}/hold",
     response_model=RadiologyScanResponse
 )
-def update_radiology_scan(
+def hold_scan(
 
     scan_id: int,
 
-    technician_name: str | None = Form(
-        default=None
-    ),
-
-    remarks: str | None = Form(
-        default=None
-    ),
+    hold_reason: str = Form(...),
 
     db: Session = Depends(get_db)
+
 ):
 
     service = RadiologyScanService(db)
 
-    return service.update_scan(
+    return service.hold_scan(
 
         scan_id=scan_id,
 
-        technician_name=technician_name,
-
-        remarks=remarks,
+        hold_reason=hold_reason,
     )
 
 
 # ========================================
-# DELETE SCAN
+# CANCEL SCAN
 # ========================================
-@router.delete(
-    "/{scan_id}"
+@router.put(
+    "/{scan_id}/cancel",
+    response_model=RadiologyScanResponse
 )
-def delete_radiology_scan(
+def cancel_scan(
 
     scan_id: int,
 
+    cancellation_reason: str = Form(...),
+
     db: Session = Depends(get_db)
+
 ):
 
     service = RadiologyScanService(db)
 
-    return service.delete_scan(
-        scan_id
+    return service.cancel_scan(
+
+        scan_id=scan_id,
+
+        cancellation_reason=cancellation_reason,
+    )
+
+
+# ========================================
+# RESCHEDULE SCAN
+# ========================================
+@router.put(
+    "/{scan_id}/reschedule",
+    response_model=RadiologyScanResponse
+)
+def reschedule_scan(
+
+    scan_id: int,
+
+    reschedule_date: datetime = Form(...),
+
+    db: Session = Depends(get_db)
+
+):
+
+    service = RadiologyScanService(db)
+
+    return service.reschedule_scan(
+
+        scan_id=scan_id,
+
+        reschedule_date=reschedule_date,
+    )
+
+
+# ========================================
+# GET SCAN BY REGISTRATION ID
+# ========================================
+@router.get(
+    "/registration/{registration_id}",
+    response_model=RadiologyScanResponse
+)
+def get_scan_by_registration(
+
+    registration_id: int,
+
+    db: Session = Depends(get_db)
+
+):
+
+    service = RadiologyScanService(db)
+
+    return service.get_scan_by_registration(
+        registration_id
     )

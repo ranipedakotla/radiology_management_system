@@ -1,8 +1,10 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, Integer, String, Text
+from sqlalchemy import Date, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
+
 from app.db.base import Base
+
 
 class RadiologyScan(Base):
     __tablename__ = "radiology_scan"
@@ -13,26 +15,38 @@ class RadiologyScan(Base):
         autoincrement=True
     )
 
-    # Refers logically to radiology_appointment.id
-    appointment_id: Mapped[int] = mapped_column(
-        Integer,
+    # Link with Radiology Registration
+    registration_id: Mapped[int] = mapped_column(
+        ForeignKey("radiology_registration.id"),
         nullable=False
     )
 
-    # Scan status
-    status: Mapped[str] = mapped_column(
-        String(30),
-        default="Pending",
-        nullable=False
-    )
-
-    # Technician who performs the scan
     technician_name: Mapped[str | None] = mapped_column(
         String(120),
         nullable=True
     )
 
-    # Scan start and completion times
+    scan_status: Mapped[str] = mapped_column(
+        String(30),
+        default="Pending",
+        nullable=False
+    )
+
+    hold_reason: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True
+    )
+
+    cancellation_reason: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True
+    )
+
+    reschedule_date: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True
+    )
+
     started_at: Mapped[datetime | None] = mapped_column(
         DateTime,
         nullable=True
@@ -40,11 +54,6 @@ class RadiologyScan(Base):
 
     completed_at: Mapped[datetime | None] = mapped_column(
         DateTime,
-        nullable=True
-    )
-
-    remarks: Mapped[str | None] = mapped_column(
-        Text,
         nullable=True
     )
 

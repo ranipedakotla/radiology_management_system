@@ -24,7 +24,7 @@ from app.api.v1.routes import admin_org as hospital_branches
 from app.api.v1.routes.lab_tests import router as lab_tests
 from app.api.v1.routes.radiology_patient import router as radiology_patient
 from app.api.v1.routes.radiology_registration import router as radiology_registration
-from app.api.v1.routes.radiology_appointment import router as radiology_appointment
+
 from app.api.v1.routes.radiology_scan import router as radiology_scan
 from app.api.v1.routes.radiology_refund import router as radiology_refund
 
@@ -147,7 +147,6 @@ app.include_router(ipd_master_routes.router)
 app.include_router(lab_tests)
 app.include_router(radiology_patient)
 app.include_router(radiology_registration)
-app.include_router(radiology_appointment)
 app.include_router(radiology_scan)
 app.include_router(radiology_refund)
 

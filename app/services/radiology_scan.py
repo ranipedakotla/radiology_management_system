@@ -3,6 +3,7 @@ from datetime import datetime
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.models.radiology_registration import RadiologyRegistration
 from app.models.radiology_scan import RadiologyScan
 
 
@@ -11,68 +12,58 @@ class RadiologyScanService:
     def __init__(self, db: Session):
         self.db = db
 
-    # ========================================
-    # CREATE SCAN
-    # ========================================
-    def create_scan(
-        self,
-        appointment_id: int,
-        technician_name: str | None,
-        remarks: str | None,
+    # --------------------------------
+    # Start Scan
+    # --------------------------------
+    def start_scan(
+            self,
+            registration_id: int,
+            technician_name: str | None,
     ):
 
-        # Check whether a scan already exists
-        # for this appointment
-        existing_scan = (
-            self.db.query(RadiologyScan)
+        registration = (
+            self.db.query(RadiologyRegistration)
             .filter(
-                RadiologyScan.appointment_id
-                == appointment_id
+                RadiologyRegistration.id == registration_id
             )
             .first()
         )
 
-        if existing_scan:
+        if not registration:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=(
-                    "A scan already exists "
-                    "for this appointment."
-                )
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Radiology registration not found."
             )
 
-        # Create new scan
         scan = RadiologyScan(
-            appointment_id=appointment_id,
-            status="Pending",
+            registration_id=registration_id,
             technician_name=technician_name,
-            remarks=remarks,
+            scan_status="In Progress",
+            started_at=datetime.utcnow()
         )
 
+        registration.scan_status = "In Progress"
+
         self.db.add(scan)
-
         self.db.commit()
-
         self.db.refresh(scan)
 
         return scan
 
-    # ========================================
-    # GET ALL SCANS
-    # ========================================
+    # --------------------------------
+    # Get All Scans
+    # --------------------------------
     def get_all_scans(self):
 
         return (
             self.db.query(RadiologyScan)
-            .order_by(
-                RadiologyScan.id.desc()
-            )
+            .order_by(RadiologyScan.id.desc())
             .all()
         )
 
-    # ========================================
-    # GET SCAN BY ID
-    # ========================================
+    # --------------------------------
+    # Get Scan
+    # --------------------------------
     def get_scan(
         self,
         scan_id: int
@@ -80,53 +71,21 @@ class RadiologyScanService:
 
         scan = (
             self.db.query(RadiologyScan)
-            .filter(
-                RadiologyScan.id == scan_id
-            )
+            .filter(RadiologyScan.id == scan_id)
             .first()
         )
 
         if not scan:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Radiology scan not found."
+                detail="Scan not found."
             )
 
         return scan
 
-    # ========================================
-    # START SCAN
-    # ========================================
-    def start_scan(
-        self,
-        scan_id: int
-    ):
-
-        scan = self.get_scan(scan_id)
-
-        # Scan can only start from Pending
-        if scan.status != "Pending":
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=(
-                    "Scan can only be started "
-                    "when the status is Pending."
-                )
-            )
-
-        scan.status = "In Progress"
-
-        scan.started_at = datetime.utcnow()
-
-        self.db.commit()
-
-        self.db.refresh(scan)
-
-        return scan
-
-    # ========================================
-    # COMPLETE SCAN
-    # ========================================
+    # --------------------------------
+    # Complete Scan
+    # --------------------------------
     def complete_scan(
         self,
         scan_id: int
@@ -134,68 +93,138 @@ class RadiologyScanService:
 
         scan = self.get_scan(scan_id)
 
-        # Scan can only be completed
-        # when it is In Progress
-        if scan.status != "In Progress":
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=(
-                    "Scan can only be completed "
-                    "when the status is In Progress."
-                )
+        registration = (
+            self.db.query(RadiologyRegistration)
+            .filter(
+                RadiologyRegistration.id ==
+                scan.registration_id
             )
+            .first()
+        )
 
-        scan.status = "Completed"
-
+        scan.scan_status = "Completed"
         scan.completed_at = datetime.utcnow()
 
-        self.db.commit()
+        registration.scan_status = "Completed"
+        registration.status = "Completed"
 
+        self.db.commit()
         self.db.refresh(scan)
 
         return scan
 
-    # ========================================
-    # UPDATE SCAN
-    # ========================================
-    def update_scan(
+    # --------------------------------
+    # Hold Scan
+    # --------------------------------
+    def hold_scan(
         self,
         scan_id: int,
-        technician_name: str | None,
-        remarks: str | None,
+        hold_reason: str
     ):
 
         scan = self.get_scan(scan_id)
 
-        if technician_name is not None:
-            scan.technician_name = technician_name
+        registration = (
+            self.db.query(RadiologyRegistration)
+            .filter(
+                RadiologyRegistration.id ==
+                scan.registration_id
+            )
+            .first()
+        )
 
-        if remarks is not None:
-            scan.remarks = remarks
+        scan.scan_status = "Hold"
+        scan.hold_reason = hold_reason
+
+        registration.scan_status = "Hold"
 
         self.db.commit()
-
         self.db.refresh(scan)
 
         return scan
 
-    # ========================================
-    # DELETE SCAN
-    # ========================================
-    def delete_scan(
+    # --------------------------------
+    # Cancel Scan
+    # --------------------------------
+    def cancel_scan(
         self,
-        scan_id: int
+        scan_id: int,
+        cancellation_reason: str
     ):
 
         scan = self.get_scan(scan_id)
 
-        self.db.delete(scan)
+        registration = (
+            self.db.query(RadiologyRegistration)
+            .filter(
+                RadiologyRegistration.id ==
+                scan.registration_id
+            )
+            .first()
+        )
+
+        scan.scan_status = "Cancelled"
+        scan.cancellation_reason = cancellation_reason
+
+        registration.scan_status = "Cancelled"
+        registration.status = "Cancelled"
 
         self.db.commit()
+        self.db.refresh(scan)
 
-        return {
-            "message": (
-                "Radiology scan "
-                "deleted successfully."
+        return scan
+
+    # --------------------------------
+    # Reschedule Scan
+    # --------------------------------
+    def reschedule_scan(
+        self,
+        scan_id: int,
+        reschedule_date: datetime
+    ):
+
+        scan = self.get_scan(scan_id)
+
+        registration = (
+            self.db.query(RadiologyRegistration)
+            .filter(
+                RadiologyRegistration.id ==
+                scan.registration_id
             )
-        }
+            .first()
+        )
+
+        scan.scan_status = "Pending"
+        scan.reschedule_date = reschedule_date
+
+        registration.scan_status = "Pending"
+
+        self.db.commit()
+        self.db.refresh(scan)
+
+        return scan
+
+    # --------------------------------
+    # Get Scan By Registration ID
+    # --------------------------------
+    def get_scan_by_registration(
+        self,
+        registration_id: int
+    ):
+
+        scan = (
+            self.db.query(RadiologyScan)
+            .filter(
+                RadiologyScan.registration_id ==
+                registration_id
+            )
+            .first()
+        )
+
+        if not scan:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Scan not found."
+            )
+
+        return scan

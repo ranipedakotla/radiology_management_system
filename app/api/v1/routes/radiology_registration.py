@@ -28,50 +28,28 @@ router = APIRouter(
 )
 def create_radiology_registration(
 
-    patient_id: int | None = Form(
-        default=None
-    ),
+    patient_id: int | None = Form(default=None),
 
-    external_id: int | None = Form(
-        default=None
-    ),
+    external_id: int | None = Form(default=None),
 
-    test_name: str = Form(
-        ...
-    ),
+    test_name: str = Form(...),
 
-    test_category: str | None = Form(
-        default=None
-    ),
+    test_category: str | None = Form(default=None),
 
-    doctor_name: str | None = Form(
-        default=None
-    ),
-
-    remarks: str | None = Form(
-        default=None
-    ),
+    doctor_name: str | None = Form(default=None),
 
     db: Session = Depends(get_db)
+
 ):
 
-    service = RadiologyRegistrationService(
-        db
-    )
+    service = RadiologyRegistrationService(db)
 
     return service.create_registration(
-
         patient_id=patient_id,
-
         external_id=external_id,
-
         test_name=test_name,
-
         test_category=test_category,
-
         doctor_name=doctor_name,
-
-        remarks=remarks,
     )
 
 
@@ -80,18 +58,15 @@ def create_radiology_registration(
 # ========================================
 @router.get(
     "/",
-    response_model=list[
-        RadiologyRegistrationResponse
-    ]
+    response_model=list[RadiologyRegistrationResponse]
 )
 def get_all_radiology_registrations(
 
     db: Session = Depends(get_db)
+
 ):
 
-    service = RadiologyRegistrationService(
-        db
-    )
+    service = RadiologyRegistrationService(db)
 
     return service.get_all_registrations()
 
@@ -108,11 +83,10 @@ def get_radiology_registration(
     registration_id: int,
 
     db: Session = Depends(get_db)
+
 ):
 
-    service = RadiologyRegistrationService(
-        db
-    )
+    service = RadiologyRegistrationService(db)
 
     return service.get_registration(
         registration_id
@@ -130,32 +104,21 @@ def update_radiology_registration(
 
     registration_id: int,
 
-    test_name: str | None = Form(
-        default=None
-    ),
+    test_name: str | None = Form(default=None),
 
-    test_category: str | None = Form(
-        default=None
-    ),
+    test_category: str | None = Form(default=None),
 
-    doctor_name: str | None = Form(
-        default=None
-    ),
+    doctor_name: str | None = Form(default=None),
 
-    status: str | None = Form(
-        default=None
-    ),
+    status: str | None = Form(default=None),
 
-    remarks: str | None = Form(
-        default=None
-    ),
+    scan_status: str | None = Form(default=None),
 
     db: Session = Depends(get_db)
+
 ):
 
-    service = RadiologyRegistrationService(
-        db
-    )
+    service = RadiologyRegistrationService(db)
 
     return service.update_registration(
 
@@ -169,7 +132,7 @@ def update_radiology_registration(
 
         status=status,
 
-        remarks=remarks,
+        scan_status=scan_status,
     )
 
 
@@ -184,11 +147,10 @@ def delete_radiology_registration(
     registration_id: int,
 
     db: Session = Depends(get_db)
+
 ):
 
-    service = RadiologyRegistrationService(
-        db
-    )
+    service = RadiologyRegistrationService(db)
 
     return service.delete_registration(
         registration_id
