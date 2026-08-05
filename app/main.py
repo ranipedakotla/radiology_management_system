@@ -27,6 +27,7 @@ from app.api.v1.routes.radiology_registration import router as radiology_registr
 
 from app.api.v1.routes.radiology_scan import router as radiology_scan
 from app.api.v1.routes.radiology_refund import router as radiology_refund
+from app.api.v1.routes.radiology_report import router as radiology_report
 
 from contextlib import asynccontextmanager
 
@@ -88,7 +89,7 @@ from app.api.v1.routes.pathology_reports import router as pathology_reports
 from app.api.v1.routes.pathology_orders import router  as pathology_orders
 from app.api.v1.routes.pathology_notifications import router  as  pathology_notifications
 from app.api.v1.routes.catalog import router as catalog
-
+from app.api.v1.routes.radiology_invoice import router as radiology_invoice
 
 
 
@@ -149,8 +150,8 @@ app.include_router(radiology_patient)
 app.include_router(radiology_registration)
 app.include_router(radiology_scan)
 app.include_router(radiology_refund)
-
-
+app.include_router(radiology_invoice)
+app.include_router(radiology_report)
 
 
 #include all routers
